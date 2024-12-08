@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор ткани и размеров</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Выбор ткани и размеров</h1>
+
+    <!-- Шаг 1: Выбор таблицы -->
+    {% if not selected_table %}
+        <form method="POST">
+            <label for="выбор_листа">Выберите таблицу:</label>
+            <select name="выбор_листа" id="выбор_листа" required>
+                {% for table in tables %}
+                    <option value="{{ table }}" {% if table == selected_table %} selected {% endif %}>{{ table }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Перейти к выбору ткани</button>
+        </form>
+    {% endif %}
+
+    <!-- Шаг 2: Выбор ткани и размеров -->
+    {% if selected_table %}
+        <h2>Выберите ткань и размеры</h2>
+
+        <form method="POST">
+            <input type="hidden" name="выбор_листа" value="{{ selected_table }}">
+
+            <!-- Выбор ткани -->
+            <label for="ткань">Выберите ткань:</label>
+            <select name="ткань" id="ткань" required>
+                {% for fabric in df.index %}
+                    <option value="{{ fabric }}" {% if fabric == selected_fabric %} selected {% endif %}>{{ fabric }}</option>
+                {% endfor %}
+            </select><br>
+
+            <!-- Ввод размеров -->
+            <label for="размеры">Введите размеры через пробел:</label><br>
+            <input type="text" name="размеры" value="{{ ' '.join(sizes) }}" required><br>
+            
+            <button type="submit">Рассчитать стоимость</button>
+        </form>
+    {% endif %}
+
+    <!-- Шаг 3: Вывод результата -->
+    {% if total_price is not none %}
+        <h2>Результат:</h2>
+        <p>Общая стоимость для ткани "{{ selected_fabric }}" и выбранных размеров: {{ total_price }}</p>
+    {% endif %}
+
+    <!-- Сообщение об ошибке -->
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+</body>
+</html>
